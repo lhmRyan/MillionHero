@@ -6,28 +6,33 @@ import time
 
 def SearchAnswer():
   # Screenshot
-  os.system('adb shell screencap -p /sdcard/1.png')
-  os.system('adb pull /sdcard/1.png')
+  os.system('adb shell screencap -p /sdcard/temp.png')
+  os.system('adb pull /sdcard/temp.png')
   
   # OCR
   pytesseract.pytesseract.tesseract_cmd = 'D:\\Program Files\\Tesseract-OCR\\tesseract'
 
   tessdata_dir_config = '--tessdata-dir "D:\\Program Files\\Tesseract-OCR\\tessdata"'
 
-  im = Image.open('1.png')
+  im = Image.open('temp.png')
   box = (65,300,1020,650)
   region = im.crop(box)
   text = pytesseract.image_to_string(region, lang = 'chi_sim')
   text = text.replace(' ','')
   text = text.replace('\n','')
   text = text.replace('_','')
+  text = text.replace('?','')
+  for i in range(0,len(text)):
+    if text[i] == '.':
+      break
   print text
 
   # Search results 
   options.get('http://www.baidu.com')  
-    
-  options.find_element_by_id("kw").send_keys(text)  
-  options.find_element_by_id("su").click()
+  
+  if i+1 < len(text):
+    options.find_element_by_id("kw").send_keys(text[i+1:]) 
+    options.find_element_by_id("su").click()
 
 options = None
 
